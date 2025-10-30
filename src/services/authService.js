@@ -20,6 +20,48 @@ const signUp = async (formData) => {
     }
 
     if (data.token) {
+      // Where we are storing the token for later use. (putting it in our back pocket)
+      /*
+        {
+          "token": "<the actual token string>"
+        }
+      */
+      localStorage.setItem('token', data.token);
+
+      // we need to get the data from the token payload
+
+      // 1. extract the middle of the token (payload)
+      const middleOfJWT = data.token.split('.')[1];
+      // 2. decode the middle of the JWT into actual info.
+      const decodedMiddle = atob(middleOfJWT); // (stringified JSON object)
+      // 3. parse the stringified object to to actual JSON
+      const payload = JSON.parse(decodedMiddle).payload;
+
+      return payload;
+    }
+
+    throw new Error('Invalid response from server');
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
+  }
+};
+
+const signIn = async (formData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/sign-in`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (data.err) {
+      throw new Error(data.err);
+    }
+
+    if (data.token) {
       localStorage.setItem('token', data.token);
       return JSON.parse(atob(data.token.split('.')[1])).payload;
     }
@@ -31,4 +73,4 @@ const signUp = async (formData) => {
   }
 };
 
-export { signUp };
+export { signUp, signIn };

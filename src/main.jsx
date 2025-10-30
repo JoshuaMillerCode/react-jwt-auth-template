@@ -4,10 +4,15 @@ import { BrowserRouter } from 'react-router';
 import './index.css';
 import App from './App.jsx';
 
+import { UserProvider } from './contexts/UserContext.jsx';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <UserProvider>
+        {/* now our entire app has access to the user state from ANYWHERE within the app */}
+        <App />
+      </UserProvider>
     </BrowserRouter>
   </StrictMode>
 );
